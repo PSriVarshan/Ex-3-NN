@@ -11,7 +11,7 @@
 
 Exclusive or is a logical operation that outputs true when the inputs differ.For the XOR gate, the TRUTH table will be as follows:
 
-XOR truth table
+#### XOR truth table
 
 ![Img1](https://user-images.githubusercontent.com/112920679/195774720-35c2ed9d-d484-4485-b608-d809931a28f5.gif)
 
@@ -33,23 +33,125 @@ The number of layers in MLP is not fixed and thus can have any number of hidden 
 
 <h3>Algorithm :</H3>
 
-Step 1 : Initialize the input patterns for XOR Gate<BR>
-Step 2: Initialize the desired output of the XOR Gate<BR>
-Step 3: Initialize the weights for the 2 layer MLP with 2 Hidden neuron  and 1 output neuron<BR>
-Step 3: Repeat the  iteration  until the losses become constant and  minimum<BR>
-    (i)  Compute the output using forward pass output<BR>
-    (ii) Compute the error<BR>
-	(iii) Compute the change in weight ‘dw’ by using backward progatation algorithm. <BR>
-    (iv) Modify the weight as per delta rule.<BR>
-    (v)  Append the losses in a list <BR>
-Step 4 : Test for the XOR patterns.
+```
+
+Step 1 : 
+	Initialize the input patterns for XOR Gate<BR>
+Step 2: 
+	Initialize the desired output of the XOR Gate<BR>
+Step 3: 
+	Initialize the weights for the 2 layer MLP with 2 Hidden neuron  and 1 output neuron<BR>
+Step 4: 
+	Repeat the  iteration  until the losses become constant and  minimum<BR>
+    		(i)  Compute the output using forward pass output<BR>
+    		(ii) Compute the error<BR>
+    		(iii) Compute the change in weight ‘dw’ by using backward progatation algorithm. <BR>
+    		(iv) Modify the weight as per delta rule.<BR>
+    		(v)  Append the losses in a list <BR>
+Step 5 :
+	Test for the XOR patterns.
+
+```
 
 <H3>Program:</H3>
-Insert your code here
+
+```py
+import numpy as np
+import pandas as pd
+import io
+import matplotlib.pyplot as plt
+```
+```py
+x=np.array([[0,0,1,1],[0,1,0,1]])
+y=np.array([[0,1,1,0]])
+```
+```py
+n_x = 2
+n_y = 1
+n_h = 2
+m = x.shape[1]
+lr = 0.1
+```
+
+```py
+w1 = np.random.rand(n_h,n_x)   # Weight matrix for hidden layer
+w2 = np.random.rand(n_y,n_h)   # Weight matrix for output layer
+```
+```py
+losses = []
+```
+```py
+def sigmoid(z):
+   z= 1/(1+np.exp(-z))
+   return z
+```
+
+```py
+def forward_prop(w1,w2,x):
+    z1 = np.dot(w1,x)
+    a1 = sigmoid(z1)
+    z2 = np.dot(w2,a1)
+    a2 = sigmoid(z2)
+    return z1,a1,z2,a2
+```
+```py
+def back_prop(m,w1,w2,z1,a1,z2,a2,y):
+    dz2 = a2-y
+    dw2 = np.dot(dz2,a1.T)/m
+    dz1 = np.dot(w2.T,dz2) * a1*(1-a1)
+    dw1 = np.dot(dz1,x.T)/m
+    dw1 = np.reshape(dw1,w1.shape)
+    dw2 = np.reshape(dw2,w2.shape)
+    return dz2,dw2,dz1,dw1
+```
+```py
+iterations = 10000
+```
+```py
+for i in range(iterations):
+    z1,a1,z2,a2 = forward_prop(w1,w2,x)
+    loss = -(1/m)*np.sum(y*np.log(a2)+(1-y)*np.log(1-a2))
+    losses.append(loss)
+    da2,dw2,dz1,dw1 = back_prop(m,w1,w2,z1,a1,z2,a2,y)
+    w2 = w2-lr*dw2
+    w1 = w1-lr*dw1
+```
+```py
+plt.plot(losses)
+plt.xlabel("EPOCHS")
+plt.ylabel("Loss value")
+```
+```py
+def predict(w1,w2,input):
+    z1,a1,z2,a2 = forward_prop(w1,w2,test)
+    a2 = np.squeeze(a2)
+    if a2>=0.5:
+        print( [i[0] for i in input], 1)
+    else:
+        print( [i[0] for i in input], 0)
+```
+
+```py
+print('Input',' Output')
+test=np.array([[1],[0]])
+predict(w1,w2,test)
+test=np.array([[1],[1]])
+predict(w1,w2,test)
+test=np.array([[0],[1]])
+predict(w1,w2,test)
+test=np.array([[0],[0]])
+predict(w1,w2,test)
+```
+
 
 <H3>Output:</H3>
 
-Show your results here
+![image](https://github.com/PSriVarshan/Ex-3-NN/assets/114944059/e9e38ffe-fe26-4688-98fb-d502d33de45f)
+
+
+![image](https://github.com/PSriVarshan/Ex-3-NN/assets/114944059/b999aec7-b80d-458e-aa79-6e3e71a9b97c)
+
 
 <H3> Result:</H3>
-Thus, XOR classification problem can be solved using MLP in Python 
+
+#### Thus, XOR classification problem can be solved using MLP in Python 
